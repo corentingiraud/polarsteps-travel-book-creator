@@ -1,0 +1,3 @@
+polarsteps-trip/**
+!polarsteps-trip/.gitkeep
+elevation_cache.json
