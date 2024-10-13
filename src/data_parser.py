@@ -1,8 +1,6 @@
 import os
 import json
 
-import requests
-
 from models.step import Step
 from models.trip import Trip
 

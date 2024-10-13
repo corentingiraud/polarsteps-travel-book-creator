@@ -1,61 +1,78 @@
 from enum import Enum
+from typing import Self
 from PIL import Image
 
 
 class PhotoRatio(Enum):
-    SMARTPHONE = "9:16"
-    FULLSCREEN = "3:4"
-    UNKNOWN = "unknown"
-
-
-class PhotoOrientation(Enum):
-    LANDSCAPE = 1
-    PORTRAIT = 2
-    UNKNOWN = 3
+    SMARTPHONE_PORTRAIT = (9, 16)
+    SMARTPHONE_LANDSCAPE = (16, 9)
+    FULLSCREEN_PORTRAIT = (3, 4)
+    FULLSCREEN_LANDSCAPE = (4, 3)
+    UNKNOWN = (0, 0)
 
 
 class Photo:
-    def __init__(self, path: str):
+    def __init__(self, id: str, path: str):
+        self.id = id
         self.path = path
         self.ratio = self.compute_photo_ratio()
-        self.orientation = self.compute_orientation()
 
-    def compute_orientation(self) -> PhotoOrientation:
-        try:
-            # Open the image to get dimensions
-            with Image.open(self.path) as img:
-                width, height = img.size
+    def can_be_side_by_side(self, other_photo: Self) -> bool:
+        side_by_side_ratios = {
+            PhotoRatio.SMARTPHONE_PORTRAIT,
+            PhotoRatio.FULLSCREEN_PORTRAIT,
+        }
+        return (
+            self.ratio in side_by_side_ratios
+            and other_photo.ratio in side_by_side_ratios
+        )
 
-                # Determine orientation
-                if width > height:
-                    return PhotoOrientation.LANDSCAPE
-                elif height > width:
-                    return PhotoOrientation.PORTRAIT
-                else:
-                    return PhotoOrientation.UNKNOWN
-        except Exception as e:
-            print(f"Error computing orientation for {self.path}: {e}")
-            return PhotoOrientation.UNKNOWN
+    def must_be_in_fullscreen(self) -> bool:
+        return self.ratio in {
+            PhotoRatio.SMARTPHONE_LANDSCAPE,
+            PhotoRatio.FULLSCREEN_LANDSCAPE,
+        }
 
     def compute_photo_ratio(self) -> PhotoRatio:
         try:
             with Image.open(self.path) as img:
                 width, height = img.size
 
-                if self.is_ratio(width, height, 9, 16):
-                    return PhotoRatio.SMARTPHONE
-                elif self.is_ratio(width, height, 3, 4):
-                    return PhotoRatio.FULLSCREEN
-                else:
-                    return PhotoRatio.UNKNOWN
+                if self.is_ratio(
+                    width,
+                    height,
+                    PhotoRatio.SMARTPHONE_PORTRAIT.value[0],
+                    PhotoRatio.SMARTPHONE_PORTRAIT.value[1],
+                ):
+                    return PhotoRatio.SMARTPHONE_PORTRAIT
+                elif self.is_ratio(
+                    width,
+                    height,
+                    PhotoRatio.SMARTPHONE_LANDSCAPE.value[0],
+                    PhotoRatio.SMARTPHONE_LANDSCAPE.value[1],
+                ):
+                    return PhotoRatio.SMARTPHONE_LANDSCAPE
+                elif self.is_ratio(
+                    width,
+                    height,
+                    PhotoRatio.FULLSCREEN_PORTRAIT.value[0],
+                    PhotoRatio.FULLSCREEN_PORTRAIT.value[1],
+                ):
+                    return PhotoRatio.FULLSCREEN_PORTRAIT
+                elif self.is_ratio(
+                    width,
+                    height,
+                    PhotoRatio.FULLSCREEN_LANDSCAPE.value[0],
+                    PhotoRatio.FULLSCREEN_LANDSCAPE.value[1],
+                ):
+                    return PhotoRatio.FULLSCREEN_LANDSCAPE
+                return PhotoRatio.UNKNOWN
         except Exception as e:
             print(f"⚠️ Error computing photo ratio for {self.path}: {e}")
             return PhotoRatio.UNKNOWN
 
     def get_template_vars(self):
-        return {
-            "path": self.path
-        }
+        return {"path": self.path}
 
     @staticmethod
     def is_ratio(width: int, height: int, ratio_width: int, ratio_height: int) -> bool:

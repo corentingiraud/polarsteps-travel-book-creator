@@ -164,4 +164,3 @@ cython_debug/
 .DS_Store
 
 src/tmp
-travel_book.pdf

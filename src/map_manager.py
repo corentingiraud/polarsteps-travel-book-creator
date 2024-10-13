@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 import re
+from typing import Set
 from pyproj import Geod
 import requests
 
@@ -73,7 +74,7 @@ class MapManager:
     def download_maps_from_trip(self, trip: Trip, output_path: str):
         Path(output_path).mkdir(parents=True, exist_ok=True)
 
-        downloaded_countries = set()
+        downloaded_countries: Set[str] = set()
 
         for step in trip.steps:
             if step.country_code in downloaded_countries:

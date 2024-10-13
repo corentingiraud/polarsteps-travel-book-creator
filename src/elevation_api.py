@@ -1,41 +1,42 @@
 from itertools import islice
+from typing import Any, Dict, List, Tuple, Iterator, Optional
 import requests
 import time
 import json
 import os
 
 class ElevationAPI:
-    def __init__(self, cache_file='data/elevation_cache.json'):
-        self.api_url = "https://api.opentopodata.org/v1/aster30m"
-        self.max_locations_per_request = 100
-        self.max_calls_per_day = 1000
-        self.calls_made = 0
-        self.cache_file = cache_file
+    def __init__(self, cache_file: str = 'data/elevation_cache.json') -> None:
+        self.api_url: str = "https://api.opentopodata.org/v1/aster30m"
+        self.max_locations_per_request: int = 100
+        self.max_calls_per_day: int = 1000
+        self.calls_made: int = 0
+        self.cache_file: str = cache_file
 
         # Load cache from file if it exists
-        self.cache = self._load_cache()
+        self.cache: Dict[str, Optional[float]] = self._load_cache()
 
-    def get_elevation(self, locations: list):
+    def get_elevation(self, locations: List[Tuple[float, float]]) -> List[Optional[float]]:
         """
         Get the elevation for a list of locations in batches, using a caching layer and respecting API limitations.
-        
+
         :param locations: A list of tuples where each tuple contains (latitude, longitude)
         :return: A list of elevations corresponding to each location
         """
-        all_elevations = []
-        locations_to_query = []
+        all_elevations: List[Optional[float]] = []
+        locations_to_query: List[Tuple[float, float]] = []
 
         # First, check if locations are in cache
         for loc in locations:
             lat, lon = loc
-            key = f"{lat},{lon}"
+            key: str = f"{lat},{lon}"
             if key in self.cache:
                 all_elevations.append(self.cache[key])
             else:
                 locations_to_query.append(loc)
 
         # Process only locations that were not found in cache
-        location_batches = self._chunks(locations_to_query, self.max_locations_per_request)
+        location_batches: Iterator[List[Tuple[float, float]]] = self._chunks(locations_to_query, self.max_locations_per_request)
 
         for batch in location_batches:
             if self.calls_made >= self.max_calls_per_day:
@@ -43,18 +44,18 @@ class ElevationAPI:
                 break
 
             # Prepare the locations string for the API request
-            locations_param = "|".join([f"{lat},{lon}" for lat, lon in batch])
-            url = f"{self.api_url}?locations={locations_param}"
+            locations_param: str = "|".join([f"{lat},{lon}" for lat, lon in batch])
+            url: str = f"{self.api_url}?locations={locations_param}"
 
             try:
                 response = requests.get(url)
                 response.raise_for_status()
-                data = response.json()
+                data: Dict[str, Any] = response.json()
 
                 if "results" in data:
                     for loc, result in zip(batch, data["results"]):
                         lat, lon = loc
-                        elevation = result.get("elevation")
+                        elevation: Optional[float] = result.get("elevation")
                         all_elevations.append(elevation)
 
                         # Cache the result
@@ -77,7 +78,7 @@ class ElevationAPI:
 
         return all_elevations
 
-    def _chunks(self, data, size):
+    def _chunks(self, data: List[Tuple[float, float]], size: int) -> Iterator[List[Tuple[float, float]]]:
         """
         Yield successive n-sized chunks from a list.
         """
@@ -85,7 +86,7 @@ class ElevationAPI:
         for first in iterator:
             yield [first] + list(islice(iterator, size - 1))
 
-    def _load_cache(self):
+    def _load_cache(self) -> Dict[str, Optional[float]]:
         """
         Load the cache from a JSON file if it exists, otherwise return an empty dictionary.
         """
@@ -94,7 +95,7 @@ class ElevationAPI:
                 return json.load(f)
         return {}
 
-    def _save_cache(self):
+    def _save_cache(self) -> None:
         """
         Save the cache to a JSON file.
         """

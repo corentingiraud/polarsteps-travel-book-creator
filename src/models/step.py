@@ -1,6 +1,8 @@
 from datetime import datetime
+from typing import Any, Dict, List, Tuple
 
 from models.photo import Photo
+from models.photo_layout import PhotoLayout
 
 WEATHER_CONDITION_FRENCH = {
     "partly-cloudy-day": "Partiellement couvert",
@@ -60,11 +62,12 @@ class Step:
         self.photos: list[Photo] = []
         self.slug: str = slug
         self.id: int = id
+        self.photo_layouts : List[Tuple[PhotoLayout, List[str]]] | None = None
 
     def get_photo_directory_name(self):
         return f"{self.slug}_{self.id}/photos"
 
-    def get_lat_lon_as_tuple(self) -> tuple:
+    def get_lat_lon_as_tuple(self) -> tuple[float, float]:
         return (self.lat, self.lon)
 
     def get_day_number(self, trip_start_date: datetime):
@@ -77,7 +80,7 @@ class Step:
     ):
         return self.get_day_number(trip_start_date) * 100 / trip_duration_in_days
 
-    def get_template_vars(self, trip_start_date: datetime, trip_duration_in_days: int):
+    def get_template_vars(self, trip_start_date: datetime, trip_duration_in_days: int) -> Dict[str, Any]:
         return {
             "name": self.name,
             "description": self.description,
@@ -92,5 +95,5 @@ class Step:
             ),
             "elevation": self.elevation,
             "position_percentage": self.position_percentage,
-            "photos": [photo.get_template_vars() for photo in self.photos]
+            "photo_layouts": self.photo_layouts
         }
