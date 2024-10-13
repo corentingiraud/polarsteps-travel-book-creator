@@ -19,7 +19,7 @@
   </head>
   <body>
     {% for step in steps %}
-    <div class="page break-after">
+    <div class="break-after">
       <div class="text-content">
         <div class="step-cover">
           <div class="step-days">
@@ -55,10 +55,13 @@
                 <div class="step-country-flag">
                   <span class="fi fi-{{ step.country_code | lower }}"></span>
                 </div>
+                {% if step.country_code != '00' %}
                 <div class="step-country-name">{{ step.country }}</div>
+                {% endif %}
               </div>
               <div class="step-title">{{ step.name }}</div>
             </div>
+            {% if step.country_code != '00' %}
             <div class="step-map">
               <img
                 src="assets/images/maps/{{ step.country_code | lower }}.svg"
@@ -99,6 +102,7 @@
                 </svg>
               </div>
             </div>
+            {% endif %}
           </div>
           <div class="step-stats">
             <div class="step-stat">
@@ -126,6 +130,12 @@
         </div>
       </div>
     </div>
-    {% endfor %}
+    {% for photo in step.photos %}
+    <div class="break-after">
+      <div class="photos-container">
+        <img class="photo" src="{{ photo.path }}" alt="" />
+      </div>
+    </div>
+    {% endfor %} {% endfor %}
   </body>
 </html>

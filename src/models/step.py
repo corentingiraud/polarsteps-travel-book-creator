@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from models.photo import Photo
+
 WEATHER_CONDITION_FRENCH = {
     "partly-cloudy-day": "Partiellement couvert",
     "rain": "Pluvieux",
@@ -35,6 +37,8 @@ class Step:
         start_time: float,
         lat: float,
         lon: float,
+        slug: str,
+        id: int,
         elevation: int | None = None,
         position_percentage: tuple[float, float] | None = None,
     ):
@@ -53,6 +57,12 @@ class Step:
         self.lon = lon
         self.elevation = elevation
         self.position_percentage: tuple[float, float] | None = position_percentage
+        self.photos: list[Photo] = []
+        self.slug: str = slug
+        self.id: int = id
+
+    def get_photo_directory_name(self):
+        return f"{self.slug}_{self.id}/photos"
 
     def get_lat_lon_as_tuple(self) -> tuple:
         return (self.lat, self.lon)
@@ -81,5 +91,6 @@ class Step:
                 trip_start_date, trip_duration_in_days
             ),
             "elevation": self.elevation,
-            "position_percentage": self.position_percentage
+            "position_percentage": self.position_percentage,
+            "photos": [photo.get_template_vars() for photo in self.photos]
         }

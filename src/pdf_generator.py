@@ -13,5 +13,6 @@ class PDFGenerator:
                 format="A4",
                 landscape=True,
                 print_background=True,
+                page_ranges="1-20"
             )
             browser.close()

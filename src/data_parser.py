@@ -28,6 +28,8 @@ class DataParser:
                 start_time=step["start_time"],
                 lat=step["location"]["lat"],
                 lon=step["location"]["lon"],
+                slug=step["slug"],
+                id=step["id"],
             )
             for step in data["all_steps"]
         ]

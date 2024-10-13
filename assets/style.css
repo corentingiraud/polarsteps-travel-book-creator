@@ -35,7 +35,8 @@ html {
   margin-top: calc(50px * var(--full-to-relative));
 }
 
-.step-days-bar, .step-days-bar-fill {
+.step-days-bar,
+.step-days-bar-fill {
   height: var(--bar-height);
   border-radius: calc(var(--bar-height) / 2);
 }
@@ -110,7 +111,7 @@ html {
 }
 
 .step-map-dot {
-  --dot-size: calc(60px* var(--full-to-relative));
+  --dot-size: calc(60px * var(--full-to-relative));
   position: absolute;
   width: var(--dot-size);
   height: var(--dot-size);
@@ -195,6 +196,15 @@ html {
   font-size: calc(39px * var(--full-to-relative));
   margin-top: calc(100px * var(--full-to-relative));
   white-space: pre-wrap;
+}
+
+.photos-container {
+  display: flex;
+  justify-content: center;
+}
+
+.photo {
+  height: 100vh;
 }
 
 .break-before {

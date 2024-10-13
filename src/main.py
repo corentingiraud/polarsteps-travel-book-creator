@@ -9,6 +9,7 @@ from elevation_api import ElevationAPI
 from html_generator import HTMLGenerator
 from map_manager import MapManager
 from pdf_generator import PDFGenerator
+from photo_manager import PhotoManager
 
 
 DEBUG = True
@@ -18,6 +19,7 @@ TMP_FOLDER = CURRENT_FILE_PATH.joinpath("tmp")
 TMP_HTML_FILE_NAME = "travel_book.html"
 PDF_FILE_NAME = "travel_book.pdf"
 OUTPUT_PATH = CURRENT_FILE_PATH.parent
+TRIP_DATA_PATH = "data/polarsteps-trip"
 
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 
@@ -31,9 +33,13 @@ def main():
     map_manager = MapManager()
     pdf_generator = PDFGenerator()
     elevation_api = ElevationAPI()
+    photo_manager = PhotoManager()
 
     # Parse data
-    trip = data_parser.load("data/polarsteps-trip")
+    trip = data_parser.load(TRIP_DATA_PATH)
+
+    # Load photo
+    photo_manager.load(TRIP_DATA_PATH, Path(TMP_FOLDER).joinpath("assets/images/photos"), trip)
 
     # Get elevation
     locations = [step.get_lat_lon_as_tuple() for step in trip.steps]
