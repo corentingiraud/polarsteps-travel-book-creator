@@ -17,7 +17,7 @@ class HTMLGenerator:
         )
         self.template = env.get_template("index.html")
 
-    def generate(self, trip: Trip, output_file_path: str):
+    def generate(self, trip: Trip, output_file_path: Path):
         template_vars = trip.get_template_vars() | self.TEMPLATE_VARS
 
         html_as_str = self.template.render(template_vars)

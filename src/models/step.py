@@ -61,7 +61,7 @@ class Step:
         self.photos: list[Photo] = []
         self.slug: str = slug
         self.id: int = id
-        self.photos_by_page : List[List[Photo]] = []
+        self.photos_by_pages : List[List[Photo]] = []
 
     def get_photo_directory_name(self):
         return f"{self.slug}_{self.id}/photos"
@@ -94,5 +94,5 @@ class Step:
             ),
             "elevation": self.elevation,
             "position_percentage": self.position_percentage,
-            "photos_by_page": self.photos_by_page
+            "photos_by_pages": self.photos_by_pages
         }

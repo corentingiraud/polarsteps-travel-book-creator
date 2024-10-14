@@ -53,10 +53,10 @@ class MapManager:
 
         return lat_percentage, lon_percentage
 
-    def update_style(self, maps_path: str):
+    def update_style(self, maps_path: Path):
         for filename in os.listdir(maps_path):
             if filename.endswith(".svg"):
-                file_path = os.path.join(maps_path, filename)
+                file_path = maps_path.joinpath(filename)
 
                 # Read the content of the SVG file
                 with open(file_path, "r") as file:
@@ -71,8 +71,8 @@ class MapManager:
                 with open(file_path, "w") as file:
                     file.write(updated_content)
 
-    def download_maps_from_trip(self, trip: Trip, output_path: str):
-        Path(output_path).mkdir(parents=True, exist_ok=True)
+    def download_maps_from_trip(self, trip: Trip, output_path: Path):
+        output_path.mkdir(parents=True, exist_ok=True)
 
         downloaded_countries: Set[str] = set()
 
@@ -86,7 +86,7 @@ class MapManager:
                 response = requests.get(svg_url)
                 response.raise_for_status()
 
-                svg_path = Path(output_path) / f"{step.country_code.lower()}.svg"
+                svg_path = output_path / f"{step.country_code.lower()}.svg"
 
                 with open(svg_path, "wb") as svg_file:
                     svg_file.write(response.content)

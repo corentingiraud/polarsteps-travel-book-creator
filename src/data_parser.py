@@ -1,13 +1,14 @@
 import os
 import json
+from pathlib import Path
 
 from models.step import Step
 from models.trip import Trip
 
 
 class DataParser:
-    def load(self, data_path: str) -> Trip:
-        file_path = os.path.join(data_path, "trip.json")
+    def load(self, data_path: Path) -> Trip:
+        file_path = data_path.joinpath("trip.json")
 
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"The file {file_path} does not exist.")
@@ -32,4 +33,10 @@ class DataParser:
             for step in data["all_steps"]
         ]
 
-        return Trip(steps=steps, start_date=data["start_date"], end_date=data["end_date"])
+        return Trip(
+            id=data["id"],
+            name=data["name"],
+            steps=steps,
+            start_date=data["start_date"],
+            end_date=data["end_date"],
+        )

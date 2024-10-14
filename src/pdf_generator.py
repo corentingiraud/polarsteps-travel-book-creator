@@ -1,8 +1,9 @@
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 
 
 class PDFGenerator:
-    def generate(self, html_file_path: str, pdf_file_path: str):
+    def generate(self, html_file_path: Path, pdf_file_path: Path):
         with sync_playwright() as p:
             browser = p.chromium.launch()
             context = browser.new_context()

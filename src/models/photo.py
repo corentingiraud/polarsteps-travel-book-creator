@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import Self
+from pathlib import Path
+from typing import Any, Dict, Self
 from PIL import Image
 
 
@@ -12,10 +13,23 @@ class PhotoRatio(Enum):
 
 
 class Photo:
-    def __init__(self, id: str, path: str):
+    def __init__(self, id: str, path: Path):
         self.id = id
         self.path = path
         self.ratio = self.compute_photo_ratio()
+    
+    @staticmethod
+    def from_dict(data: Dict[str, Any]):
+        return Photo(
+            id=data.get("id", ""),
+            path=data.get("path", ""),
+        )
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "path": str(self.path),
+        }
 
     def can_be_side_by_side(self, other_photo: Self) -> bool:
         side_by_side_ratios = {

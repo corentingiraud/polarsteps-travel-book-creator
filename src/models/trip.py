@@ -6,7 +6,9 @@ from models.step import Step
 class Trip:
     steps: List[Step]
 
-    def __init__(self, start_date: float, end_date: float | None, steps: List[Step]):
+    def __init__(self, id: int, name: str, start_date: float, end_date: float | None, steps: List[Step]):
+        self.id = id
+        self.name = name
         self.steps = steps
         self.start_date = datetime.fromtimestamp(start_date)
         self.end_date = datetime.fromtimestamp(end_date) if end_date else None
