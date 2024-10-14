@@ -3,24 +3,23 @@ from pathlib import Path
 import shutil
 from typing import Set
 from models.photo import Photo
-from models.photo_layout import PhotoLayout
 from models.trip import Trip
 
 
 class PhotoManager:
     def compute_photos_layouts(self, trip: Trip):
         for step in trip.steps:
-            step.photo_layouts = []
-            used_photos: Set[str] = set()  # Keep track of photos that have already been paired
-            
+            step.photos_by_page = []
+            used_photos: Set[str] = (
+                set()
+            )  # Keep track of photos that have already been paired
+
             for i, photo in enumerate(step.photos):
                 if photo.id in used_photos:
                     continue  # Skip if this photo is already used in a layout
 
                 if photo.must_be_in_fullscreen():
-                    step.photo_layouts.append(
-                        (PhotoLayout.FULLSCREEN, [photo.path])
-                    )
+                    step.photos_by_page.append([photo])
                     used_photos.add(photo.id)
                     continue
 
@@ -28,20 +27,18 @@ class PhotoManager:
                 pair_found = False
                 for j in range(i + 1, len(step.photos)):
                     candidate = step.photos[j]
-                    if candidate.id not in used_photos and photo.can_be_side_by_side(candidate):
+                    if candidate.id not in used_photos and photo.can_be_side_by_side(
+                        candidate
+                    ):
                         # We found a matching pair for side-by-side layout
-                        step.photo_layouts.append(
-                            (PhotoLayout.TWO_PHOTOS_SIDE_BY_SIDE, [photo.path, candidate.path])
-                        )
+                        step.photos_by_page.append([photo, candidate])
                         used_photos.update({photo.id, candidate.id})
                         pair_found = True
                         break
 
                 if not pair_found:
                     # If no pair found, place the photo in fullscreen layout
-                    step.photo_layouts.append(
-                        (PhotoLayout.FULLSCREEN, [photo.path])
-                    )
+                    step.photos_by_page.append([photo])
                     used_photos.add(photo.id)
 
     def load(self, data_path: str, output_path_for_photos: str, trip: Trip):

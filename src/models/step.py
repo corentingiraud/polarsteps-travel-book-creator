@@ -1,8 +1,7 @@
 from datetime import datetime
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from models.photo import Photo
-from models.photo_layout import PhotoLayout
 
 WEATHER_CONDITION_FRENCH = {
     "partly-cloudy-day": "Partiellement couvert",
@@ -62,7 +61,7 @@ class Step:
         self.photos: list[Photo] = []
         self.slug: str = slug
         self.id: int = id
-        self.photo_layouts : List[Tuple[PhotoLayout, List[str]]] | None = None
+        self.photos_by_page : List[List[Photo]] = []
 
     def get_photo_directory_name(self):
         return f"{self.slug}_{self.id}/photos"
@@ -95,5 +94,5 @@ class Step:
             ),
             "elevation": self.elevation,
             "position_percentage": self.position_percentage,
-            "photo_layouts": self.photo_layouts
+            "photos_by_page": self.photos_by_page
         }

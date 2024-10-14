@@ -7,18 +7,12 @@ class PDFGenerator:
             browser = p.chromium.launch()
             context = browser.new_context()
             page = context.new_page()
-            page.goto(f"file://{html_file_path}.html")
-
-            try:
-                page.pdf(
-                    path=f"{pdf_file_path}.pdf",
-                    format="A4",
-                    landscape=True,
-                    print_background=True,
-                    # page_ranges="999998-999999"
-                )
-            except Exception as e:
-                if e.message and "Page range exceeds page count" in str(e.message): # type: ignore
-                    # Try again with a new index
-                    raise e
+            page.goto(f"file://{html_file_path}")
+            page.pdf(
+                path=pdf_file_path,
+                format="A4",
+                landscape=True,
+                print_background=True,
+                page_ranges="1-50"
+            )
             browser.close()

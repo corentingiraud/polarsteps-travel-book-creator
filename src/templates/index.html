@@ -130,11 +130,11 @@
         </div>
       </div>
     </div>
-    {% for layout in step.photo_layouts %}
+    {% for page in step.photos_by_page %}
     <div class="break-after">
       <div class="photos-container">
-        {% for photo_path in layout[1] %}
-        <img class="photo" src="{{ photo_path }}" alt="" />
+        {% for photo in page %}
+        <img class="photo" src="{{ photo.path }}" alt="" />
         {% endfor %}
       </div>
     </div>
