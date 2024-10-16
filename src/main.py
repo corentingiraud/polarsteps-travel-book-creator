@@ -45,7 +45,6 @@ def main():
         TRIP_DATA_PATH, Path(TMP_FOLDER).joinpath("assets/images/photos"), trip
     )
     photo_manager.load_photos_pages(trip, DATA_PATH)
-    photo_manager.compute_photos_pages(trip)
     photo_manager.save_photos_pages(trip, DATA_PATH)
 
     # Get elevation

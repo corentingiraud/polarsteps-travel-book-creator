@@ -98,7 +98,7 @@ class Step:
 
 
     def get_name_for_photos_by_pages_export(self):
-        return f"{self.start_time.strftime("%d/%m/%Y")} {self.name}:"
+        return f"{self.start_time.strftime("%d/%m/%Y")} {self.name} ({self.id})"
 
     def get_photo_directory_name(self):
         return f"{self.slug}_{self.id}/photos"

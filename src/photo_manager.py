@@ -24,15 +24,15 @@ class PhotoManager:
             
             # Prepare a list to hold all photo indices for the step
             step_photos_mapping = {}
-            for i, photo in enumerate(step.photos):
+            for i, photo in enumerate(step.photos, start=1): # Start index from 1
                 step_photos_mapping[i] = photo.to_dict()
 
             # Save the photo mapping for this step
             photos_mapping[step.id] = step_photos_mapping
 
-            # Iterate over pages in the step and append the photo indices
+            # Iterate over pages in the step and append the photo indices (start from 1)
             for page in step.photos_by_pages:
-                photos_by_pages.append(" ".join(str(step.photos.index(photo)) for photo in page))
+                photos_by_pages.append(" ".join(str(step.photos.index(photo) + 1) for photo in page))
             
             # Add an empty line to separate the step
             photos_by_pages.append("")
@@ -106,7 +106,7 @@ class PhotoManager:
                 photo_indexes = photos_by_pages[line_index].split(" ")
 
                 photos_for_this_page = [
-                    Photo.from_dict(photos_mapping[step.id][int(photo_index)])  # type: ignore
+                    Photo.from_dict(photos_mapping[str(step.id)][photo_index])
                     for photo_index in photo_indexes
                 ]
 
@@ -116,9 +116,8 @@ class PhotoManager:
 
             # Check if all photos loaded from PolarSteps export are present in pages. 
             photos_not_in_pages = [
-                photo
-                for photo in step.photos
-                if all(photo not in page for page in step.photos_by_pages)
+                photo for photo in step.photos 
+                if any(photo in page for page in step.photos_by_pages)
             ]
 
             if photos_not_in_pages:

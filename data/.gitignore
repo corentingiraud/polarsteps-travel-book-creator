@@ -1,4 +1,5 @@
 polarsteps-trip/**
 !polarsteps-trip/.gitkeep
 elevation_cache.json
-*_photos_layout.txt
+*_photos_mapping.json
+*_photos_by_pages.txt

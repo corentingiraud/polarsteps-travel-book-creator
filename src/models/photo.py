@@ -91,3 +91,11 @@ class Photo:
     @staticmethod
     def is_ratio(width: int, height: int, ratio_width: int, ratio_height: int) -> bool:
         return abs((width / height) - (ratio_width / ratio_height)) < 0.01
+
+    def __eq__(self, other: Any):
+        if isinstance(other, Photo):
+            return self.id == other.id and self.path == other.path
+        return False
+    
+    def __hash__(self):
+        return hash((self.id, self.path))
