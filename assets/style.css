@@ -204,8 +204,31 @@ html {
   gap: 30px;
 }
 
-.photo {
+.photo-container {
   height: 100vh;
+  position: relative;
+}
+
+.photo-index {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  font-size: 40px;
+  font-family: "BrandonGrotesque";
+  font-weight: 500;
+  color: red;
+}
+
+@media print {
+  .photo-index {
+    display: none;
+  }
+}
+
+.photo {
+  height: 100%;
+  width: auto;
 }
 
 .break-before {
@@ -214,4 +237,13 @@ html {
 
 .break-after {
   page-break-after: always;
+  border: dashed 5px red;
+  margin-bottom: 10px;
+}
+
+@media print {
+  .break-after {
+    border: none;
+    margin-bottom: 0;
+  }
 }

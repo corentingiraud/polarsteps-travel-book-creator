@@ -134,7 +134,10 @@
     <div class="break-after">
       <div class="photos-container">
         {% for photo in page %}
-        <img class="photo" src="{{ photo.path }}" alt="" />
+        <div class="photo-container">
+          <img class="photo" src="{{ photo.path }}" alt="" />
+          <div class="photo-index">{{ photo.index }}</div>
+        </div>
         {% endfor %}
       </div>
     </div>

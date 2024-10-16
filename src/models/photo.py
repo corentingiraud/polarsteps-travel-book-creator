@@ -13,8 +13,9 @@ class PhotoRatio(Enum):
 
 
 class Photo:
-    def __init__(self, id: str, path: Path):
+    def __init__(self, id: str, index: int, path: Path):
         self.id = id
+        self.index = index
         self.path = path
         self.ratio = self.compute_photo_ratio()
     
@@ -22,12 +23,14 @@ class Photo:
     def from_dict(data: Dict[str, Any]):
         return Photo(
             id=data.get("id", ""),
+            index=data.get("index", 0),
             path=data.get("path", ""),
         )
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
+            "index": self.index,
             "path": str(self.path),
         }
 

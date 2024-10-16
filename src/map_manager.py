@@ -11,11 +11,12 @@ from models.trip import Trip
 
 DATA_SOURCE = "https://raw.githubusercontent.com/djaiss/mapsicon/master/all/{country_code}/vector.svg"
 FILL_COLOR = "#4b5a6c"
+COUNTRY_BOUNDING_BOXES_PATH = "data/country_bounding_boxes.json"
 
 
 class MapManager:
     def __init__(self):
-        with open("data/country_bounding_boxes.json", "r") as f:
+        with open(COUNTRY_BOUNDING_BOXES_PATH, "r") as f:
             self.country_bounding_boxes = json.load(f)
         self.geod = Geod(ellps="WGS84")
 

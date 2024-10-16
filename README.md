@@ -42,7 +42,7 @@ Once you have your Polarsteps data, copy **only the trip data** into the `data/p
 data/polarsteps-trip/trip.json
 ```
 
-### 6. Run the Script
+### Run the Script
 
 You can now run the main script to process the trip data:
 
@@ -50,8 +50,10 @@ You can now run the main script to process the trip data:
 python src/main.py
 ```
 
+## Customization of your travel book
+
 <details>
-  <summary>Updating the Photo Layout Using the `_photos_by_pages.txt` File</summary>
+  <summary>Updating the photo order Using the `your_trip_photos_by_pages.txt` file</summary>
   
   The `_photos_by_pages.txt` file is a critical component of managing and updating the layout of photos in your trip. It allows you to control how the photos are grouped by pages for each step of the trip.
 
@@ -59,7 +61,7 @@ python src/main.py
 
   The `_photos_by_pages.txt` file consists of a sequence of steps followed by the layout of photos for each step. The format is as follows:
 
-  1. **Step Name**: The name of the step (as defined by the `Trip` object) appears on its own line.
+  1. **Step Name**: The name of the step appears on its own line.
   2. **Photo Indexes**: Each subsequent line lists the indices of photos that should be displayed together on a page. The photos for each page are separated by spaces (each index corresponds to a photo in the step).
   3. **Empty Line**: An empty line separates the different steps in the trip.
 

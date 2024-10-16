@@ -1,22 +1,28 @@
 from itertools import islice
+from pathlib import Path
 from typing import Any, Dict, List, Tuple, Iterator, Optional
 import requests
 import time
 import json
 import os
 
+CACHE_FILE_NAME = "elevation_cache.json"
+
+
 class ElevationAPI:
-    def __init__(self, cache_file: str = 'data/elevation_cache.json') -> None:
+    def __init__(self, cache_directory: Path) -> None:
         self.api_url: str = "https://api.opentopodata.org/v1/aster30m"
         self.max_locations_per_request: int = 100
         self.max_calls_per_day: int = 1000
         self.calls_made: int = 0
-        self.cache_file: str = cache_file
+        self.cache_file = cache_directory.joinpath(CACHE_FILE_NAME)
 
         # Load cache from file if it exists
         self.cache: Dict[str, Optional[float]] = self._load_cache()
 
-    def get_elevation(self, locations: List[Tuple[float, float]]) -> List[Optional[float]]:
+    def get_elevation(
+        self, locations: List[Tuple[float, float]]
+    ) -> List[Optional[float]]:
         """
         Get the elevation for a list of locations in batches, using a caching layer and respecting API limitations.
 
@@ -36,7 +42,9 @@ class ElevationAPI:
                 locations_to_query.append(loc)
 
         # Process only locations that were not found in cache
-        location_batches: Iterator[List[Tuple[float, float]]] = self._chunks(locations_to_query, self.max_locations_per_request)
+        location_batches: Iterator[List[Tuple[float, float]]] = self._chunks(
+            locations_to_query, self.max_locations_per_request
+        )
 
         for batch in location_batches:
             if self.calls_made >= self.max_calls_per_day:
@@ -71,14 +79,18 @@ class ElevationAPI:
 
             except requests.exceptions.RequestException as e:
                 print(f"An error occurred: {e}")
-                all_elevations.extend([None] * len(batch))  # Return None for each location in case of an error
+                all_elevations.extend(
+                    [None] * len(batch)
+                )  # Return None for each location in case of an error
 
         # Save updated cache to file
         self._save_cache()
 
         return all_elevations
 
-    def _chunks(self, data: List[Tuple[float, float]], size: int) -> Iterator[List[Tuple[float, float]]]:
+    def _chunks(
+        self, data: List[Tuple[float, float]], size: int
+    ) -> Iterator[List[Tuple[float, float]]]:
         """
         Yield successive n-sized chunks from a list.
         """
@@ -91,7 +103,7 @@ class ElevationAPI:
         Load the cache from a JSON file if it exists, otherwise return an empty dictionary.
         """
         if os.path.exists(self.cache_file):
-            with open(self.cache_file, 'r') as f:
+            with open(self.cache_file, "r") as f:
                 return json.load(f)
         return {}
 
@@ -99,5 +111,5 @@ class ElevationAPI:
         """
         Save the cache to a JSON file.
         """
-        with open(self.cache_file, 'w') as f:
+        with open(self.cache_file, "w") as f:
             json.dump(self.cache, f)
