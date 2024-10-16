@@ -24,7 +24,7 @@ class MapManager:
         bounding_box = self.country_bounding_boxes.get(step.country_code.lower())
 
         if not bounding_box:
-            print(f"⚠️ No bounding box data found for country code: {step.country_code}")
+            print(f"ℹ️ No country bounding box data found for step '{step.name}'")
             return (0, 0)
 
         sw = bounding_box["sw"]
@@ -94,5 +94,5 @@ class MapManager:
 
                 downloaded_countries.add(step.country_code)
 
-            except requests.exceptions.RequestException as e:
-                print(f"⚠️ Failed to download map for {step.country_code}: {e}")
+            except requests.exceptions.RequestException:
+                print(f"ℹ️ Failed to download map for step '{step.name}'")

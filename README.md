@@ -53,7 +53,7 @@ python src/main.py
 ## Customization of your travel book
 
 <details>
-  <summary>Updating the photo order Using the `your_trip_photos_by_pages.txt` file</summary>
+  <summary>Updating the photo order using the `your_trip_photos_by_pages.txt` file</summary>
   
   The `_photos_by_pages.txt` file is a critical component of managing and updating the layout of photos in your trip. It allows you to control how the photos are grouped by pages for each step of the trip.
 

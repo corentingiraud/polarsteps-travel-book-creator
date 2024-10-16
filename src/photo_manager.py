@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 from pathlib import Path
@@ -13,31 +14,23 @@ PHOTOS_MAPPING_FILE_NAME = "photos_mapping.json"
 
 class PhotoManager:
     def save_photos_pages(self, trip: Trip, save_path: Path):
-        # Create dictionaries to hold the data for the two files
         photos_mapping = {}
         photos_by_pages: List[str] = []
 
-        # Iterate over each step in the trip
         for step in trip.steps:
-            # Add step name to photos_by_pages
             photos_by_pages.append(step.get_name_for_photos_by_pages_export())
 
-            # Prepare a list to hold all photo indices for the step
             step_photos_mapping = {}
             for photo in step.photos:
                 step_photos_mapping[photo.index] = photo.to_dict()
 
-            # Save the photo mapping for this step
             photos_mapping[step.id] = step_photos_mapping
 
-            # Iterate over pages in the step and append the photo indices
             for page in step.photos_by_pages:
                 photos_by_pages.append(" ".join(str(photo.index) for photo in page))
 
-            # Add an empty line to separate the step
             photos_by_pages.append("")
 
-        # Save the two files
         with open(
             save_path.joinpath(PHOTOS_MAPPING_FILE_NAME),
             "w",
@@ -60,7 +53,7 @@ class PhotoManager:
 
         except FileNotFoundError:
             print(
-                f"ℹ️ No file named '{trip.get_formatted_name()}{PHOTOS_MAPPING_FILE_NAME}' found. Continuing with default photos by pages."
+                f"ℹ️ No file named '{PHOTOS_MAPPING_FILE_NAME}' found. Continuing with default photos by pages."
             )
 
     def get_photos_by_pages_from_file(self, trip: Trip, save_path: Path):
@@ -72,7 +65,7 @@ class PhotoManager:
                 return f.read().splitlines()
         except FileNotFoundError:
             print(
-                f"ℹ️ No file named '{trip.get_formatted_name()}{PHOTOS_BY_PAGES_FILE_NAME}' found. Continuing with default photos by pages."
+                f"ℹ️ No file named '{PHOTOS_BY_PAGES_FILE_NAME}' found. Continuing with default photos by pages."
             )
 
     def load_photos_pages(self, trip: Trip, save_path: Path):
@@ -93,7 +86,7 @@ class PhotoManager:
                 )
             except ValueError:
                 print(
-                    f"ℹ️ Step '{step.get_name_for_photos_by_pages_export()}' is present in PolarSteps export but not in '{trip.get_formatted_name()}{PHOTOS_BY_PAGES_FILE_NAME}' file. Using default layout..."
+                    f"ℹ️ Step '{step.get_name_for_photos_by_pages_export()}' is present in PolarSteps export but not in '{PHOTOS_BY_PAGES_FILE_NAME}' file. Using default layout..."
                 )
                 step.compute_default_photos_by_pages()
                 continue
@@ -116,12 +109,12 @@ class PhotoManager:
             photos_not_in_pages = [
                 photo
                 for photo in step.photos
-                if any(photo in page for page in step.photos_by_pages)
+                if not any(photo in page for page in step.photos_by_pages)
             ]
 
             if photos_not_in_pages:
                 print(
-                    f"ℹ️ A photo is present in the PolarSteps export but not in '{trip.get_formatted_name()}{PHOTOS_BY_PAGES_FILE_NAME}' file. Using default layout for the step '{step.get_name_for_photos_by_pages_export()}'..."
+                    f"ℹ️ A photo is present in the PolarSteps export but not in '{PHOTOS_BY_PAGES_FILE_NAME}' file. Using default layout for the step '{step.get_name_for_photos_by_pages_export()}'..."
                 )
                 step.compute_default_photos_by_pages()
 

@@ -24,7 +24,7 @@ class Photo:
         return Photo(
             id=data.get("id", ""),
             index=data.get("index", 0),
-            path=data.get("path", ""),
+            path=Path(data.get("path", "")),
         )
 
     def to_dict(self) -> Dict[str, Any]:
