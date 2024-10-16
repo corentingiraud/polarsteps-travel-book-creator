@@ -1,5 +1,5 @@
 
-# Polarsteps Trip Data Processor
+# Polarsteps Travel Book Creator
 
 This project processes trip data exported from [Polarsteps](https://support.polarsteps.com/article/124-how-can-i-export-a-copy-of-my-data).
 

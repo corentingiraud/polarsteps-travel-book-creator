@@ -2,8 +2,10 @@ import locale
 import os
 import shutil
 from pathlib import Path
+import argparse
 
 
+from arguments_manager import ArgumentManager
 from data_parser import DataParser
 from elevation_api import ElevationAPI
 from html_generator import HTMLGenerator
@@ -12,13 +14,11 @@ from pdf_generator import PDFGenerator
 from photo_manager import PhotoManager
 
 
-DEBUG = True
-
 CURRENT_FILE_PATH = Path(__file__).resolve().parent
 TMP_FOLDER = CURRENT_FILE_PATH.joinpath("tmp")
 TMP_HTML_FILE_NAME = "travel_book.html"
 PDF_FILE_NAME = "travel_book.pdf"
-OUTPUT_PATH = CURRENT_FILE_PATH.parent.joinpath("travel_book")
+OUTPUT_PATH = CURRENT_FILE_PATH.parent
 DATA_PATH = CURRENT_FILE_PATH.parent.joinpath("data")
 TRIP_DATA_PATH = DATA_PATH.joinpath("polarsteps-trip")
 
@@ -29,6 +29,7 @@ def main():
     shutil.rmtree(TMP_FOLDER, ignore_errors=True)
     os.mkdir(TMP_FOLDER)
 
+    arg_manager = ArgumentManager()
     data_parser = DataParser()
     html_generator = HTMLGenerator()
     map_manager = MapManager()
@@ -40,7 +41,7 @@ def main():
     trip = data_parser.load(TRIP_DATA_PATH)
 
     # Load photo
-    photo_manager.load(
+    photo_manager.load_from_polarsteps_export(
         TRIP_DATA_PATH, Path(TMP_FOLDER).joinpath("assets/images/photos"), trip
     )
     photo_manager.load_photos_pages(trip, DATA_PATH)
@@ -66,12 +67,12 @@ def main():
     html_generator.generate(trip, TMP_FOLDER.joinpath(TMP_HTML_FILE_NAME))
 
     # PDF generation
-    pdf_generator.generate(
-        TMP_FOLDER.joinpath(TMP_HTML_FILE_NAME),
-        OUTPUT_PATH.joinpath(PDF_FILE_NAME),
-    )
+    # pdf_generator.generate(
+    #     TMP_FOLDER.joinpath(TMP_HTML_FILE_NAME),
+    #     OUTPUT_PATH.joinpath(PDF_FILE_NAME),
+    # )
 
-    if not DEBUG:
+    if not arg_manager.get_args().debug:
         shutil.rmtree(TMP_FOLDER)
 
     print("✅ Travel book has been successfully generated !")

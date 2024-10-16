@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Set
 
 from models.photo import Photo
 
@@ -62,6 +62,43 @@ class Step:
         self.slug: str = slug
         self.id: int = id
         self.photos_by_pages : List[List[Photo]] = []
+
+    def compute_default_photos_by_pages(self):
+        self.photos_by_pages = []
+        used_photos: Set[str] = (
+            set()
+        )  # Keep track of photos that have already been paired
+
+        for i, photo in enumerate(self.photos):
+            if photo.id in used_photos:
+                continue  # Skip if this photo is already used in a page
+
+            if photo.must_be_in_fullscreen():
+                self.photos_by_pages.append([photo])
+                used_photos.add(photo.id)
+                continue
+
+            # Try to find a matching photo for side-by-side layout
+            pair_found = False
+            for j in range(i + 1, len(self.photos)):
+                candidate = self.photos[j]
+                if candidate.id not in used_photos and photo.can_be_side_by_side(
+                    candidate
+                ):
+                    # We found a matching pair for side-by-side layout
+                    self.photos_by_pages.append([photo, candidate])
+                    used_photos.update({photo.id, candidate.id})
+                    pair_found = True
+                    break
+
+            if not pair_found:
+                # If no pair found, place the photo in fullscreen layout
+                self.photos_by_pages.append([photo])
+                used_photos.add(photo.id)
+
+
+    def get_name_for_photos_by_pages_export(self):
+        return f"{self.start_time.strftime("%d/%m/%Y")} {self.name}:"
 
     def get_photo_directory_name(self):
         return f"{self.slug}_{self.id}/photos"

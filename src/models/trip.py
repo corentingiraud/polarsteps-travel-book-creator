@@ -12,6 +12,13 @@ class Trip:
         self.steps = steps
         self.start_date = datetime.fromtimestamp(start_date)
         self.end_date = datetime.fromtimestamp(end_date) if end_date else None
+    
+    def compute_default_photos_by_pages(self):
+        for step in self.steps:
+            step.compute_default_photos_by_pages()
+
+    def get_formatted_name(self):
+        return self.name.lower().replace(" ", "_")
 
     def get_last_step_date(self) -> datetime:
         return max(self.steps, key=lambda step: step.start_time).start_time
