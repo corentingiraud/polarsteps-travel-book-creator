@@ -132,14 +132,12 @@
     </div>
     {% for page in step.photos_by_pages %}
     <div class="break-after">
-      <div class="photos-container">
-        {% for photo in page %}
-        <div class="photo-container">
-          <img class="photo" src="{{ photo.path }}" alt="" />
-          <div class="photo-index">{{ photo.index }}</div>
-        </div>
-        {% endfor %}
-      </div>
+      {% if page | length <= 2 %}
+        {% include 'one_or_two_images.html' %}
+      {% endif %}
+      {% if page | length > 2 and page | length <= 4 %}
+        {% include 'three_or_four_images.html' %}
+      {% endif %}
     </div>
     {% endfor %} {% endfor %}
   </body>

@@ -198,15 +198,28 @@ html {
   white-space: pre-wrap;
 }
 
-.photos-container {
+.photo-columns {
   display: flex;
   justify-content: center;
   gap: 30px;
+  height: 100vh;
+}
+
+.photo-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
 }
 
 .photo-container {
-  height: 100vh;
   position: relative;
+  width: auto;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto 100%;
 }
 
 .photo-index {
@@ -227,8 +240,8 @@ html {
 }
 
 .photo {
-  height: 100%;
-  width: auto;
+  width: 100%;
+  height: auto;
 }
 
 .break-before {
