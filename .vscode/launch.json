@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "src/main.py",
       "console": "integratedTerminal",
-      "args": ["--debug", "--page_ranges", "1-20"]
+      "args": ["--debug", "--step_ranges", "1-5"]
     }
   ]
 }

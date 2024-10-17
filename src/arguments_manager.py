@@ -1,10 +1,11 @@
 import argparse
+from typing import Set
 
 
 class ArgumentManager():
     _instance = None
     debug = False
-    page_ranges: str | None = None
+    step_indices: Set[int] | None = None
     paper_format: str | None = None
 
     def __new__(cls):
@@ -19,10 +20,10 @@ class ArgumentManager():
             "--debug", action="store_true", help="Enable DEBUG mode"
         )
         self.parser.add_argument(
-            "--page_ranges",
+            "--step_ranges",
             default=None,
             type=str,
-            help='Specify page ranges to be printed. Example: "1-20" to print from page 1 to page 20',
+            help='Specify step ranges to be generated. Example: "1-20" to generate from step 1 to step 20',
         )
         self.parser.add_argument(
             "--paper_format",
@@ -32,6 +33,27 @@ class ArgumentManager():
         )
         self.args = self.parser.parse_args()
         self.__dict__.update(vars(self.args))
+
+        if self.args.step_ranges:
+            self.step_indices = self.parse_step_ranges(self.args.step_ranges)
+
+    def parse_step_ranges(self, step_ranges: str) -> Set[int]:
+        """Parses step ranges string and returns a set of indices."""
+        ranges: Set[int] = set()
+        
+        # Split the ranges by comma (if multiple ranges are provided)
+        parts = step_ranges.split(',')
+        
+        for part in parts:
+            if '-' in part:
+                # Handle range like 1-20
+                start, end = map(int, part.split('-'))
+                ranges.update(range(start, end + 1))
+            else:
+                # Handle single step like '5'
+                ranges.add(int(part))
+        
+        return ranges
 
     def get_args(self):
         return self.args

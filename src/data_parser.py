@@ -2,6 +2,7 @@ import os
 import json
 from pathlib import Path
 
+from arguments_manager import ArgumentManager
 from models.step import Step
 from models.trip import Trip
 
@@ -15,6 +16,8 @@ class DataParser:
 
         with open(file_path, "r") as file:
             data = json.load(file)
+
+        step_indices = ArgumentManager().step_indices
 
         steps = [
             Step(
@@ -30,7 +33,8 @@ class DataParser:
                 slug=step["slug"],
                 id=step["id"],
             )
-            for step in data["all_steps"]
+            for i, step in enumerate(data["all_steps"], start=1)
+            if not step_indices or i in step_indices
         ]
 
         return Trip(

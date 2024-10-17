@@ -16,6 +16,5 @@ class PDFGenerator:
                 format=ArgumentManager().paper_format,
                 landscape=True,
                 print_background=True,
-                page_ranges=ArgumentManager().page_ranges
             )
             browser.close()
