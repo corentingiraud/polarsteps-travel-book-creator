@@ -2,28 +2,14 @@ from datetime import datetime
 from typing import Any, Dict, List, Set
 
 from models.photo import Photo
+from translations import (
+    COUNTRIES,
+    UNKNOWN_COUNTRY,
+    UNKNOWN_WEATHER,
+    WEATHER_CONDITION,
+)
 
-WEATHER_CONDITION_FRENCH = {
-    "partly-cloudy-day": "Partiellement couvert",
-    "rain": "Pluvieux",
-    "clear-day": "Ensoleille",
-}
-COUNTRIES_FRENCH = {
-    "Montenegro": "Montenegro",
-    "Albania": "Albanie",
-    "Bosnia and Herzegovina": "Bosnie-Herzegovine",
-    "Bulgaria": "Bulgarie",
-    "Italy": "Italie",
-    "Turkey": "Turquie",
-    "North Macedonia": "Macedoine du Nord",
-    "Pays inconnu": "Pays inconnu",
-    "France": "France",
-    "Slovenia": "Slovenie",
-    "Croatia": "Croatie",
-    "Greece": "Grece",
-}
-UNKNOWN_WEATHER_FRENCH = "Meteo inconnue"
-UNKNOWN_COUNTRY_FRENCH = "Pays inconnu"
+DESCRIPTION_MAX_CHAR_FOR_PHOTO_IN_FIRST_PAGE = 1000
 
 
 class Step:
@@ -45,12 +31,12 @@ class Step:
     ):
         self.name = name
         self.description = description
-        self.country = COUNTRIES_FRENCH[country] if country else UNKNOWN_COUNTRY_FRENCH
+        self.country = COUNTRIES[country] if country else UNKNOWN_COUNTRY
         self.country_code = country_code
         self.weather_condition = (
-            WEATHER_CONDITION_FRENCH[weather_condition]
+            WEATHER_CONDITION[weather_condition]
             if weather_condition
-            else UNKNOWN_WEATHER_FRENCH
+            else UNKNOWN_WEATHER
         )
         self.weather_temperature = weather_temperature
         self.start_time = datetime.fromtimestamp(start_time)
@@ -61,7 +47,15 @@ class Step:
         self.photos: list[Photo] = []
         self.slug: str = slug
         self.id: int = id
-        self.photos_by_pages : List[List[Photo]] = []
+        self.photos_by_pages: List[List[Photo]] = []
+        self.has_cover_photo = self.should_use_cover_photo()
+        self.cover_photo: Photo | None = None
+
+    def should_use_cover_photo(self) -> bool:
+        return (
+            not self.description
+            or len(self.description) < DESCRIPTION_MAX_CHAR_FOR_PHOTO_IN_FIRST_PAGE
+        )
 
     def compute_default_photos_by_pages(self):
         self.photos_by_pages = []
@@ -69,11 +63,24 @@ class Step:
             set()
         )  # Keep track of photos that have already been paired
 
+        # Elect cover photo if needed
+        if self.has_cover_photo:
+            self.cover_photo = next(
+                (photo for photo in self.photos if photo.is_portrait_ratio()), 
+                next((photo for photo in self.photos if photo.is_landscape_ratio()), None)
+            )
+            
+            if self.cover_photo:
+                used_photos.add(self.cover_photo.id)
+            else:
+                self.has_cover_photo = False
+
+
         for i, photo in enumerate(self.photos):
             if photo.id in used_photos:
                 continue  # Skip if this photo is already used in a page
 
-            if photo.must_be_in_fullscreen():
+            if photo.is_landscape_ratio():
                 self.photos_by_pages.append([photo])
                 used_photos.add(photo.id)
                 continue
@@ -96,7 +103,6 @@ class Step:
                 self.photos_by_pages.append([photo])
                 used_photos.add(photo.id)
 
-
     def get_name_for_photos_by_pages_export(self):
         return f"{self.start_time.strftime("%d/%m/%Y")} {self.name} ({self.id})"
 
@@ -116,7 +122,9 @@ class Step:
     ):
         return self.get_day_number(trip_start_date) * 100 / trip_duration_in_days
 
-    def get_template_vars(self, trip_start_date: datetime, trip_duration_in_days: int) -> Dict[str, Any]:
+    def get_template_vars(
+        self, trip_start_date: datetime, trip_duration_in_days: int
+    ) -> Dict[str, Any]:
         return {
             "name": self.name,
             "description": self.description,
@@ -131,5 +139,7 @@ class Step:
             ),
             "elevation": self.elevation,
             "position_percentage": self.position_percentage,
-            "photos_by_pages": self.photos_by_pages
+            "photos_by_pages": self.photos_by_pages,
+            "has_cover_photo": self.has_cover_photo,
+            "cover_photo": self.cover_photo,
         }

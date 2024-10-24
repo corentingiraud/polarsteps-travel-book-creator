@@ -9,6 +9,7 @@ from models.trip import Trip
 
 PHOTOS_BY_PAGES_FILE_NAME = "photos_by_pages.txt"
 PHOTOS_MAPPING_FILE_NAME = "photos_mapping.json"
+COVER_PHOTO_TEXT_IN_FILE = "Cover photo: "
 
 
 class PhotoManager:
@@ -24,6 +25,9 @@ class PhotoManager:
                 step_photos_mapping[photo.index] = photo.to_dict()
 
             photos_mapping[step.id] = step_photos_mapping
+
+            if step.has_cover_photo and step.cover_photo:
+                photos_by_pages.append(COVER_PHOTO_TEXT_IN_FILE + str(step.cover_photo.index))
 
             for page in step.photos_by_pages:
                 photos_by_pages.append(" ".join(str(photo.index) for photo in page))
@@ -90,6 +94,13 @@ class PhotoManager:
                 step.compute_default_photos_by_pages()
                 continue
 
+            # Handle cover photo
+            if photos_by_pages[line_index].startswith(COVER_PHOTO_TEXT_IN_FILE):
+                cover_photo_index = photos_by_pages[line_index].removeprefix(COVER_PHOTO_TEXT_IN_FILE)
+                step.has_cover_photo = True
+                step.cover_photo = Photo.from_dict(photos_mapping[str(step.id)][cover_photo_index])
+                line_index += 1
+
             while (
                 len(photos_by_pages) > line_index and photos_by_pages[line_index] != ""
             ):
@@ -110,6 +121,9 @@ class PhotoManager:
                 for photo in step.photos
                 if not any(photo in page for page in step.photos_by_pages)
             ]
+
+            if step.cover_photo:
+                photos_not_in_pages.remove(step.cover_photo)
 
             if photos_not_in_pages:
                 print(

@@ -5,6 +5,7 @@ from typing import Set
 class ArgumentManager():
     _instance = None
     debug = False
+    no_pdf = False
     step_indices: Set[int] | None = None
     paper_format: str | None = None
 
@@ -24,6 +25,11 @@ class ArgumentManager():
             default=None,
             type=str,
             help='Specify step ranges to be generated. Example: "1-20" to generate from step 1 to step 20',
+        )
+        self.parser.add_argument(
+            "--no-pdf",
+            action="store_true",
+            help='Don\'t generate a pdf file.',
         )
         self.parser.add_argument(
             "--paper_format",

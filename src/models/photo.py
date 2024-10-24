@@ -43,8 +43,14 @@ class Photo:
             self.ratio in side_by_side_ratios
             and other_photo.ratio in side_by_side_ratios
         )
+    
+    def is_portrait_ratio(self) -> bool:
+        return self.ratio in {
+            PhotoRatio.SMARTPHONE_PORTRAIT,
+            PhotoRatio.FULLSCREEN_PORTRAIT,
+        }
 
-    def must_be_in_fullscreen(self) -> bool:
+    def is_landscape_ratio(self) -> bool:
         return self.ratio in {
             PhotoRatio.SMARTPHONE_LANDSCAPE,
             PhotoRatio.FULLSCREEN_LANDSCAPE,

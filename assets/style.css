@@ -21,13 +21,23 @@ html {
   font-variation-settings: "wdth" 100;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 .text-content {
   padding: calc(202px * var(--full-to-relative));
 }
 
-.text-content--one-column {
-  display: grid;
-  columns: 3;
+.step-with-photo {
+  display: flex;
+  height: 100vh;
+}
+
+.step-with-photo > div {
+  flex: 1;
+  height: 100%;
 }
 
 .step-days {
@@ -104,6 +114,7 @@ html {
   height: calc(var(--country-shape-size) * var(--full-to-relative));
   position: relative;
   margin-top: calc(50px * var(--full-to-relative));
+  margin-left: 10px;
 }
 
 .step-map img {
@@ -159,6 +170,7 @@ html {
   overflow-wrap: break-word;
   text-align: left;
   text-align: start;
+  margin-top: 8px;
 }
 
 .step-stats {

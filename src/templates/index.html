@@ -19,126 +19,23 @@
   </head>
   <body>
     {% for step in steps %}
-    <div class="break-after">
-      <div class="text-content">
-        <div class="step-cover">
-          <div class="step-days">
-            <div
-              class="step-days-popup"
-              style="left: {{ step.trip_percentage }}%;"
-            >
-              Jour {{ step.day_number }}
-              <div class="step-days-popup-arrow">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="15"
-                  viewBox="0 0 40 15"
-                  fill="none"
-                >
-                  <path
-                    d="M17.5012 0.999025C18.9621 -0.169674 21.0379 -0.169676 22.4988 0.999024L40 15H0L17.5012 0.999025Z"
-                  ></path>
-                </svg>
-              </div>
-            </div>
-            <div class="step-days-bar">
-              <div
-                class="step-days-bar-fill"
-                style="width: {{ step.trip_percentage }}%;"
-              ></div>
-            </div>
-          </div>
-          <div class="step-header">
-            <div>
-              <div class="step-country">
-                <div class="step-country-flag">
-                  <span class="fi fi-{{ step.country_code | lower }}"></span>
-                </div>
-                {% if step.country_code != '00' %}
-                <div class="step-country-name">{{ step.country }}</div>
-                {% endif %}
-              </div>
-              <div class="step-title">{{ step.name }}</div>
-            </div>
-            {% if step.country_code != '00' %}
-            <div class="step-map">
-              <img
-                src="assets/images/maps/{{ step.country_code | lower }}.svg"
-                alt=""
-              />
-              <div
-                class="step-map-dot"
-                style="top: {{ (100 - step.position_percentage[0]) }}%; left: {{ step.position_percentage[1] }}%"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="80"
-                  height="80"
-                  viewBox="0 0 80 80"
-                  fill="none"
-                >
-                  <circle
-                    opacity="0.3"
-                    cx="40"
-                    cy="40"
-                    r="40"
-                    fill="#47AEA2"
-                  ></circle>
-                  <circle
-                    opacity="0.5"
-                    cx="40"
-                    cy="40"
-                    r="30"
-                    fill="#47AEA2"
-                  ></circle>
-                  <circle
-                    opacity="0.7"
-                    cx="40"
-                    cy="40"
-                    r="18"
-                    fill="#47AEA2"
-                  ></circle>
-                </svg>
-              </div>
-            </div>
-            {% endif %}
-          </div>
-          <div class="step-stats">
-            <div class="step-stat">
-              <div class="step-stat-data">
-                {{ step.start_time.strftime("%d") }}
-              </div>
-              <div class="step-stat-description">
-                {{ step.start_time.strftime("%B") }}
-              </div>
-            </div>
-            <div class="step-stat">
-              <div class="step-stat-data">
-                {{ step.weather_temperature }} °C
-              </div>
-              <div class="step-stat-description">
-                {{ step.weather_condition }}
-              </div>
-            </div>
-            <div class="step-stat">
-              <div class="step-stat-data">{{ step.elevation }}</div>
-              <div class="step-stat-description">Metres d'altitude</div>
-            </div>
-          </div>
-          <div class="step-description">{{ step.description }}</div>
-        </div>
+      <div class="break-after">
+        {% if step.has_cover_photo %}
+          {% include 'step/step_with_cover.html' %}
+        {% else %}
+          {% include 'step/step.html' %}
+        {% endif %}
       </div>
-    </div>
-    {% for page in step.photos_by_pages %}
-    <div class="break-after">
-      {% if page | length <= 2 %}
-        {% include 'one_or_two_images.html' %}
-      {% endif %}
-      {% if page | length > 2 and page | length <= 4 %}
-        {% include 'three_or_four_images.html' %}
-      {% endif %}
-    </div>
-    {% endfor %} {% endfor %}
+      {% for page in step.photos_by_pages %}
+        <div class="break-after">
+          {% if page | length <= 2 %}
+            {% include 'photos/one_or_two.html' %}
+          {% endif %}
+          {% if page | length > 2 and page | length <= 4 %}
+          {% include 'photos/three_or_four.html' %}
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endfor %}
   </body>
 </html>

@@ -1,10 +1,10 @@
 <div class="photo-columns">
   <div class="photo-column">
-    {% set photo = page[0] %} {% include 'photo.html' %}
+    {% set photo = page[0] %} {% include 'photos/photo.html' %}
   </div>
   {% if page | length == 2 %}
   <div class="photo-column">
-    {% set photo = page[1] %} {% include 'photo.html' %}
+    {% set photo = page[1] %} {% include 'photos/photo.html' %}
   </div>
   {% endif %}
 </div>

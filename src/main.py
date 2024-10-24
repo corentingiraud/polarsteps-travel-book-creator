@@ -62,10 +62,11 @@ def main():
     html_generator.generate(trip, OUTPUT_PATH.joinpath(HTML_FILE_NAME))
 
     # PDF generation
-    pdf_generator.generate(
-        OUTPUT_PATH.joinpath(HTML_FILE_NAME),
-        OUTPUT_PATH.joinpath(PDF_FILE_NAME),
-    )
+    if not ArgumentManager().no_pdf:
+        pdf_generator.generate(
+            OUTPUT_PATH.joinpath(HTML_FILE_NAME),
+            OUTPUT_PATH.joinpath(PDF_FILE_NAME),
+        )
 
     print("✅ Travel book has been successfully generated !")
 

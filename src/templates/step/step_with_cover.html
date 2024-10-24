@@ -1,0 +1,8 @@
+<div class="step-with-photo">
+  <div>{% include 'step/step_info.html' %}</div>
+  <div>
+    {% with photo=step.cover_photo %}
+      {% include 'photos/photo.html' %}
+    {% endwith %}
+  </div>
+</div>
