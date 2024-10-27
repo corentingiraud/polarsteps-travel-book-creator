@@ -20,7 +20,7 @@
   <body>
     {% for step in steps %}
       <div class="break-after">
-        {% if step.has_cover_photo %}
+        {% if step.cover_photo %}
           {% include 'step/step_with_cover.html' %}
         {% else %}
           {% include 'step/step.html' %}

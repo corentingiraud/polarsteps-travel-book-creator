@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Any, Dict, List, Set
+import random
+from typing import Any, Dict, List
 
-from models.photo import Photo
+from models.photo import Photo, PhotoRatio
 from translations import (
     COUNTRIES,
     UNKNOWN_COUNTRY,
@@ -48,7 +49,6 @@ class Step:
         self.slug: str = slug
         self.id: int = id
         self.photos_by_pages: List[List[Photo]] = []
-        self.has_cover_photo = self.should_use_cover_photo()
         self.cover_photo: Photo | None = None
 
     def should_use_cover_photo(self) -> bool:
@@ -59,49 +59,66 @@ class Step:
 
     def compute_default_photos_by_pages(self):
         self.photos_by_pages = []
-        used_photos: Set[str] = (
-            set()
-        )  # Keep track of photos that have already been paired
+        candidates = self.photos.copy()
 
-        # Elect cover photo if needed
-        if self.has_cover_photo:
+        # Handle cover photo if needed
+        if self.should_use_cover_photo():
             self.cover_photo = next(
-                (photo for photo in self.photos if photo.is_portrait_ratio()), 
-                next((photo for photo in self.photos if photo.is_landscape_ratio()), None)
+                (photo for photo in self.photos if photo.ratio == PhotoRatio.PORTRAIT),
+                next(
+                    (
+                        photo
+                        for photo in self.photos
+                        if photo.ratio == PhotoRatio.LANDSCAPE
+                    ),
+                    None,
+                ),
             )
-            
             if self.cover_photo:
-                used_photos.add(self.cover_photo.id)
-            else:
-                self.has_cover_photo = False
+                candidates.remove(self.cover_photo)
 
+        landscape_candidates = [
+            photo for photo in candidates if photo.ratio == PhotoRatio.LANDSCAPE
+        ]
+        portrait_candidates = [
+            photo for photo in candidates if photo.ratio == PhotoRatio.PORTRAIT
+        ]
+        other_candidates = [
+            photo
+            for photo in candidates
+            if photo.ratio not in {PhotoRatio.PORTRAIT, PhotoRatio.LANDSCAPE}
+        ]
 
-        for i, photo in enumerate(self.photos):
-            if photo.id in used_photos:
-                continue  # Skip if this photo is already used in a page
+        # Priority 1: 4 photos, must be 4 landscape
+        while len(landscape_candidates) >= 4:
+            self.photos_by_pages.append(landscape_candidates[:4])
+            landscape_candidates = landscape_candidates[4:]
 
-            if photo.is_landscape_ratio():
-                self.photos_by_pages.append([photo])
-                used_photos.add(photo.id)
-                continue
+        # Priority 2: 3 photos, must be 2 landscape + 1 portrait
+        while len(landscape_candidates) >= 2 and len(portrait_candidates) >= 1:
+            self.photos_by_pages.append(
+                landscape_candidates[:2] + [portrait_candidates[0]]
+            )
+            landscape_candidates = landscape_candidates[2:]
+            portrait_candidates = portrait_candidates[1:]
 
-            # Try to find a matching photo for side-by-side layout
-            pair_found = False
-            for j in range(i + 1, len(self.photos)):
-                candidate = self.photos[j]
-                if candidate.id not in used_photos and photo.can_be_side_by_side(
-                    candidate
-                ):
-                    # We found a matching pair for side-by-side layout
-                    self.photos_by_pages.append([photo, candidate])
-                    used_photos.update({photo.id, candidate.id})
-                    pair_found = True
-                    break
+        # Priority 3: 2 photos, must be 2 portrait
+        while len(portrait_candidates) >= 2:
+            self.photos_by_pages.append(portrait_candidates[:2])
+            portrait_candidates = portrait_candidates[2:]
 
-            if not pair_found:
-                # If no pair found, place the photo in fullscreen layout
-                self.photos_by_pages.append([photo])
-                used_photos.add(photo.id)
+        # Priority 4: 1 photo
+        while len(portrait_candidates) > 0:
+            self.photos_by_pages.append([portrait_candidates[0]])
+            portrait_candidates = portrait_candidates[1:]
+        while len(landscape_candidates) > 0:
+            self.photos_by_pages.append([landscape_candidates[0]])
+            landscape_candidates = landscape_candidates[1:]
+        while len(other_candidates) > 0:
+            self.photos_by_pages.append([other_candidates[0]])
+            other_candidates = other_candidates[1:]
+
+        random.shuffle(self.photos_by_pages)
 
     def get_name_for_photos_by_pages_export(self):
         return f"{self.start_time.strftime("%d/%m/%Y")} {self.name} ({self.id})"
@@ -109,7 +126,7 @@ class Step:
     def get_photo_directory_name(self):
         return f"{self.slug}_{self.id}/photos"
 
-    def get_lat_lon_as_tuple(self) -> tuple[float, float]:
+    def get_lat_lon_as_tuple(self):
         return (self.lat, self.lon)
 
     def get_day_number(self, trip_start_date: datetime):
@@ -140,6 +157,5 @@ class Step:
             "elevation": self.elevation,
             "position_percentage": self.position_percentage,
             "photos_by_pages": self.photos_by_pages,
-            "has_cover_photo": self.has_cover_photo,
             "cover_photo": self.cover_photo,
         }

@@ -5,12 +5,19 @@ from PIL import Image
 
 
 class PhotoRatio(Enum):
-    SMARTPHONE_PORTRAIT = (9, 16)
-    SMARTPHONE_LANDSCAPE = (16, 9)
-    FULLSCREEN_PORTRAIT = (3, 4)
-    FULLSCREEN_LANDSCAPE = (4, 3)
-    UNKNOWN = (0, 0)
+    PORTRAIT = [(9, 16), (3, 4)]
+    LANDSCAPE = [(16, 9), (4, 3)]
+    UNKNOWN = []
 
+    @staticmethod
+    def get_ratio(width: int, height: int):
+        for photo_ratio in PhotoRatio:
+            for ratio in photo_ratio.value:
+                ratio_width = ratio[0]
+                ratio_height = ratio[1]
+                if abs((width / height) - (ratio_width / ratio_height)) < 0.1:
+                    return photo_ratio
+        return PhotoRatio.UNKNOWN
 
 class Photo:
     def __init__(self, id: str, index: int, path: Path):
@@ -35,71 +42,19 @@ class Photo:
         }
 
     def can_be_side_by_side(self, other_photo: Self) -> bool:
-        side_by_side_ratios = {
-            PhotoRatio.SMARTPHONE_PORTRAIT,
-            PhotoRatio.FULLSCREEN_PORTRAIT,
-        }
-        return (
-            self.ratio in side_by_side_ratios
-            and other_photo.ratio in side_by_side_ratios
-        )
-    
-    def is_portrait_ratio(self) -> bool:
-        return self.ratio in {
-            PhotoRatio.SMARTPHONE_PORTRAIT,
-            PhotoRatio.FULLSCREEN_PORTRAIT,
-        }
-
-    def is_landscape_ratio(self) -> bool:
-        return self.ratio in {
-            PhotoRatio.SMARTPHONE_LANDSCAPE,
-            PhotoRatio.FULLSCREEN_LANDSCAPE,
-        }
+        return self.ratio == PhotoRatio.PORTRAIT and other_photo.ratio == PhotoRatio.PORTRAIT
 
     def compute_photo_ratio(self) -> PhotoRatio:
         try:
             with Image.open(self.path) as img:
                 width, height = img.size
-
-                if self.is_ratio(
-                    width,
-                    height,
-                    PhotoRatio.SMARTPHONE_PORTRAIT.value[0],
-                    PhotoRatio.SMARTPHONE_PORTRAIT.value[1],
-                ):
-                    return PhotoRatio.SMARTPHONE_PORTRAIT
-                elif self.is_ratio(
-                    width,
-                    height,
-                    PhotoRatio.SMARTPHONE_LANDSCAPE.value[0],
-                    PhotoRatio.SMARTPHONE_LANDSCAPE.value[1],
-                ):
-                    return PhotoRatio.SMARTPHONE_LANDSCAPE
-                elif self.is_ratio(
-                    width,
-                    height,
-                    PhotoRatio.FULLSCREEN_PORTRAIT.value[0],
-                    PhotoRatio.FULLSCREEN_PORTRAIT.value[1],
-                ):
-                    return PhotoRatio.FULLSCREEN_PORTRAIT
-                elif self.is_ratio(
-                    width,
-                    height,
-                    PhotoRatio.FULLSCREEN_LANDSCAPE.value[0],
-                    PhotoRatio.FULLSCREEN_LANDSCAPE.value[1],
-                ):
-                    return PhotoRatio.FULLSCREEN_LANDSCAPE
-                return PhotoRatio.UNKNOWN
-        except Exception as e:
-            print(f"⚠️ Error computing photo ratio for {self.path}: {e}")
+                return PhotoRatio.get_ratio(width, height)
+        except Exception:
+            print(f"Unknown photo ratio for '{self.id}'.")
             return PhotoRatio.UNKNOWN
 
     def get_template_vars(self):
         return {"path": self.path}
-
-    @staticmethod
-    def is_ratio(width: int, height: int, ratio_width: int, ratio_height: int) -> bool:
-        return abs((width / height) - (ratio_width / ratio_height)) < 0.01
 
     def __eq__(self, other: Any):
         if isinstance(other, Photo):

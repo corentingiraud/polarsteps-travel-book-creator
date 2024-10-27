@@ -32,7 +32,7 @@ html, body {
 
 .step-with-photo {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 40px);
 }
 
 .step-with-photo > div {
@@ -213,16 +213,18 @@ html, body {
 .photo-columns {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  height: 100vh;
+  align-items: center;
+  height: calc(100vh - 40px);
+  gap: 20px;
 }
 
 .photo-column {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 30px;
+  height: 100%;
   width: 100%;
+  gap: 20px;
 }
 
 .photo-container {
@@ -261,6 +263,7 @@ html, body {
 }
 
 .break-after {
+  padding: 20px;
   page-break-after: always;
   border: dashed 5px red;
   margin-bottom: 10px;

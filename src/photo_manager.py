@@ -14,37 +14,37 @@ COVER_PHOTO_TEXT_IN_FILE = "Cover photo: "
 
 class PhotoManager:
     def save_photos_pages(self, trip: Trip, save_path: Path):
-        photos_mapping = {}
-        photos_by_pages: List[str] = []
+        export_photos_mapping_json = {}
+        export_line_by_line: List[str] = []
 
         for step in trip.steps:
-            photos_by_pages.append(step.get_name_for_photos_by_pages_export())
+            export_line_by_line.append(step.get_name_for_photos_by_pages_export())
 
             step_photos_mapping = {}
             for photo in step.photos:
                 step_photos_mapping[photo.index] = photo.to_dict()
 
-            photos_mapping[step.id] = step_photos_mapping
+            export_photos_mapping_json[step.id] = step_photos_mapping
 
-            if step.has_cover_photo and step.cover_photo:
-                photos_by_pages.append(COVER_PHOTO_TEXT_IN_FILE + str(step.cover_photo.index))
+            if step.cover_photo:
+                export_line_by_line.append(COVER_PHOTO_TEXT_IN_FILE + str(step.cover_photo.index))
 
             for page in step.photos_by_pages:
-                photos_by_pages.append(" ".join(str(photo.index) for photo in page))
+                export_line_by_line.append(" ".join(str(photo.index) for photo in page))
 
-            photos_by_pages.append("")
+            export_line_by_line.append("")
 
         with open(
             save_path.joinpath(PHOTOS_MAPPING_FILE_NAME),
             "w",
         ) as f:
-            json.dump(photos_mapping, f, indent=4)
+            json.dump(export_photos_mapping_json, f, indent=4)
 
         with open(
             save_path.joinpath(PHOTOS_BY_PAGES_FILE_NAME),
             "w",
         ) as f:
-            f.write("\n".join(photos_by_pages))
+            f.write("\n".join(export_line_by_line))
 
     def get_photos_mapping_from_file(self, trip: Trip, save_path: Path):
         try:
@@ -97,7 +97,6 @@ class PhotoManager:
             # Handle cover photo
             if photos_by_pages[line_index].startswith(COVER_PHOTO_TEXT_IN_FILE):
                 cover_photo_index = photos_by_pages[line_index].removeprefix(COVER_PHOTO_TEXT_IN_FILE)
-                step.has_cover_photo = True
                 step.cover_photo = Photo.from_dict(photos_mapping[str(step.id)][cover_photo_index])
                 line_index += 1
 
