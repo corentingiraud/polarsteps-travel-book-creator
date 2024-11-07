@@ -10,7 +10,7 @@ from translations import (
     WEATHER_CONDITION,
 )
 
-DESCRIPTION_MAX_CHAR_FOR_PHOTO_IN_FIRST_PAGE = 1000
+DESCRIPTION_MAX_CHAR_COVER_PHOTO = 800
 
 
 class Step:
@@ -54,7 +54,7 @@ class Step:
     def should_use_cover_photo(self) -> bool:
         return (
             not self.description
-            or len(self.description) < DESCRIPTION_MAX_CHAR_FOR_PHOTO_IN_FIRST_PAGE
+            or len(self.description) < DESCRIPTION_MAX_CHAR_COVER_PHOTO
         )
 
     def compute_default_photos_by_pages(self):

@@ -27,7 +27,7 @@ html, body {
 }
 
 .text-content {
-  padding: calc(202px * var(--full-to-relative));
+  padding: calc(150px * var(--full-to-relative));
 }
 
 .step-with-photo {
@@ -163,9 +163,9 @@ html, body {
   font-family: "BrandonGrotesque";
   font-weight: 500;
   color: var(--dark-1);
-  font-size: calc(120px * var(--full-to-relative));
+  font-size: calc(100px * var(--full-to-relative));
   text-transform: uppercase;
-  line-height: calc(120px * var(--full-to-relative));
+  line-height: calc(100px * var(--full-to-relative));
   hyphens: manual;
   overflow-wrap: break-word;
   text-align: left;
@@ -192,20 +192,20 @@ html, body {
 .step-stat-data {
   margin-bottom: calc(22px * var(--full-to-relative));
   color: var(--theme-color);
-  font-size: calc(80px * var(--full-to-relative));
-  line-height: calc(80px * var(--full-to-relative));
+  font-size: calc(70px * var(--full-to-relative));
+  line-height: calc(70px * var(--full-to-relative));
 }
 
 .step-stat-description {
   text-transform: uppercase;
   color: var(--grey-15);
-  font-size: calc(40px * var(--full-to-relative));
-  line-height: calc(40px * var(--full-to-relative));
+  font-size: calc(30px * var(--full-to-relative));
+  line-height: calc(30px * var(--full-to-relative));
 }
 
 .step-description {
   color: var(--grey-9);
-  font-size: calc(39px * var(--full-to-relative));
+  font-size: calc(35px * var(--full-to-relative));
   margin-top: calc(100px * var(--full-to-relative));
   white-space: pre-wrap;
 }
@@ -267,6 +267,14 @@ html, body {
   page-break-after: always;
   border: dashed 5px red;
   margin-bottom: 10px;
+}
+
+.break-after:nth-child(odd) {
+  padding-left: 80px;
+}
+
+.break-after:nth-child(even) {
+  padding-right: 80px;
 }
 
 @media print {

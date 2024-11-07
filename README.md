@@ -1,19 +1,15 @@
 
 # Polarsteps Travel Book Creator
 
-This project processes trip data exported from [Polarsteps](https://support.polarsteps.com/article/124-how-can-i-export-a-copy-of-my-data).
+A Python tool that takes your Polarsteps data export and converts it into a beautifully formatted PDF, ready to be printed as a travel book. Perfect for preserving your travel memories!
 
 ## Setup Instructions
-
-### 0. Python Version
 
 Ensure you are using Python version `3.12`. You can check your Python version with:
 
 ```bash
 python --version
 ```
-
-### 1. Create a Virtual Environment
 
 Before running the project, create a virtual environment to manage dependencies:
 
@@ -22,27 +18,13 @@ python -m venv env
 source env/bin/activate
 ```
 
-### 2. Install Dependencies
-
 Once the virtual environment is active, install the required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Export Polarsteps Data
-
-Export your data from Polarsteps by following [these instructions](https://support.polarsteps.com/article/124-how-can-i-export-a-copy-of-my-data).
-
-### 5. Add Trip Data
-
-Once you have your Polarsteps data, copy **only the trip data** into the `data/polarsteps-trip` folder. Ensure the file named `trip.json` is located as follows:
-
-```
-data/polarsteps-trip/trip.json
-```
-
-### Run the Script
+Export your data from Polarsteps by following [these instructions](https://support.polarsteps.com/article/124-how-can-i-export-a-copy-of-my-data). Then, copy **only the trip data** into the `data/polarsteps-trip` folder. Ensure the file named `trip.json` is located in `data/polarsteps-trip/trip.json`.
 
 You can now run the main script to process the trip data:
 
@@ -50,94 +32,68 @@ You can now run the main script to process the trip data:
 python src/main.py
 ```
 
+You can ajust the script behaviour using the following options:
+
+- `--debug`: Activates debug mode when included (e.g., --debug).
+- `--step_ranges`: Specifies a range or list of steps to be generated, such as "1-20" for steps 1 to 20, or multip ranges separated by commas (e.g., "1-5,10,15-20").
+- `--no-pdf`: Prevents PDF generation if specified (e.g., --no-pdf). Usefull to quickly test and update your travel book layout.
+- `--paper_format`: Sets the paper format for the PDF output, defaulting to "A4" but can be changed to other forma (e.g., --paper_format="Letter").
+
+The output files are located in the `travel_book` folder. The two most important files are:
+- `travel_book.html` wich is the HTML file used to generate the PDF.
+- `travel_book.pdf`
+
+## Notes about default layout
+
+Some descisions have been made for the default behaviour of the script:
+- If the step description is not too long (<= 800 characters), an **cover photo** will be automatically choosen and placed in the step first page.
+- Space saving is the priority for each page of the travel book. It means that the algorithm will compute the default pages layout following these priorities:
+  - *Priority 1*: 4 landscape photos
+  - *Priority 2*: 3 photos, must be 2 landscape + 1 portrait
+  - *Priority 3*: 2 photos, must be 2 portrait
+  - *Priority 4*: 1 photo
+
 ## Customization of your travel book
 
 <details>
-  <summary>Updating the photo order using the `your_trip_photos_by_pages.txt` file</summary>
-  
-  The `_photos_by_pages.txt` file is a critical component of managing and updating the layout of photos in your trip. It allows you to control how the photos are grouped by pages for each step of the trip.
+  <summary>Translate country / weather</summary>
 
-  ## Overview of the `_photos_by_pages.txt` File Structure
+You can translate countries and weather condition by editing the file `src/translations.py`. PR are welcome for better translation managment.
+</details>
 
-  The `_photos_by_pages.txt` file consists of a sequence of steps followed by the layout of photos for each step. The format is as follows:
+<details>
+  <summary>Changing photo order</summary>
 
-  1. **Step Name**: The name of the step appears on its own line.
-  2. **Photo Indexes**: Each subsequent line lists the indices of photos that should be displayed together on a page. The photos for each page are separated by spaces (each index corresponds to a photo in the step).
-  3. **Empty Line**: An empty line separates the different steps in the trip.
+The `travel_book/photos_by_pages.txt` file is a critical component of managing and updating the layout of photos in your trip. It allows you to control how the photos are grouped by pages for each step of the trip. It consists of a sequence of steps followed by the layout of photos for each step. Here is an example of how the file might look:
 
-  ### Example of `_photos_by_pages.txt`
+```
+Step 1: Day at the Beach
+Cover photo: 1
+2 3
+4 5
 
-  Here is an example of how the file might look:
+Step 2: Hiking in the Mountains
+1 2 3
+4 5
+```
 
-  ```
-  Step 1: Day at the Beach
-  1 2
-  4 5
+- **"Step 1: Day at the Beach"**:
+  - The cover photo is photo indice 1 (the step description is < 800 characters)
+  - The second page contains photos with indices 2 and 3
+  - The second page contains photos with indices 4 and 5
+- **"Step 2: Hiking in the Mountains"**:
+  - No cover photo
+  - The first page contains photos 1, 2 and 3
+  - The second page contains photo 4 and 5
 
-  Step 2: Hiking in the Mountains
-  1 2
-  3
-  4 5
-  ```
+To get the photo indices, open the `travel_book.html` file in your favorite browser. 
 
-  - **"Step 1: Day at the Beach"**:
-    - The first page contains photos with indices 1, and 2.
-    - The second page contains photos with indices 4 and 5.
-  - **"Step 2: Hiking in the Mountains"**:
-    - The first page contains photos 1 and 2.
-    - The second page contains photo 3.
-    - The third page contains photos 4, and 5.
+After making changes to this file, ensure that:
+- **No Missing Photos**: Every photo index within a step should be accounted for. Make sure you don’t miss any photos when rearranging the layout.
+- **Correct Indices**: Use the correct photo indices. Photo indices start from 1 (not 0), and they correspond to the order of photos in each step.
+- **Consistent Formatting**: Ensure there are no extra spaces or lines between the photo indices. Each step should be separated by an empty line.
 
-  ## How to Update the Photo Layout
+If any issues arise (e.g., a photo is missing), the script reverts to the default layout for that step, and you will be notified via console output.
 
-  If you want to change the layout of the photos in your trip, you can update the `_photos_by_pages.txt` file directly. Here's how:
-
-  ### 1. Open the File
-    - Navigate to the directory where the file is saved (`data/`)
-    - Open the `_photos_by_pages.txt` file in a text editor.
-
-  ### 2. Locate the Step
-    - Find the step that you want to update by looking for the corresponding step name in the file.
-
-  ### 3. Update the Photo Indices
-    - Modify the lines following the step name to adjust the photo layout.
-    - Each line represents a page of photos. List the photo indices (starting from 1) that you want on each page, separated by spaces.
-    - Make sure to maintain the empty line between steps.
-
-  #### Example Update:
-
-  Suppose you want to change the layout for "Step 1: Day at the Beach" such that:
-  - The first page should now have photos 1, and 4.
-  - The second page should have photos 2 and 3.
-
-  You would edit the file as follows:
-
-  ```
-  Step 1: Day at the Beach
-  1 4
-  2 3
-  ```
-
-  ### 4. Validating Your Changes
-
-  After making changes, ensure that:
-  - **No Missing Photos**: Every photo index within a step should be accounted for. Make sure you don’t miss any photos when rearranging the layout.
-  - **Correct Indices**: Use the correct photo indices. Photo indices start from 1 (not 0), and they correspond to the order of photos in each step.
-  - **Consistent Formatting**: Ensure there are no extra spaces or lines between the photo indices. Each step should be separated by an empty line.
-
-  ### 5. Applying Changes to the Trip
-
-  Once you’ve updated and saved the `_photos_by_pages.txt` file:
-  1. Load the trip data in your application.
-  2. The photo manager will read the updated `_photos_by_pages.txt` file and apply the new layout to the trip.
-  3. If any issues arise (e.g., a photo is missing), the system may revert to the default layout for that step, and you will be notified via console output.
-
-  ### Handling Errors
-
-  - **Missing or Incorrect Photo Indices**: If you provide an index that doesn’t exist for a given step, or if any photos are missing from the layout, the system will use the default layout for the step and notify you with a message.
-  - **Invalid File Format**: Ensure the file format follows the described structure. Any deviation may result in errors or unintended behavior.
-
-  ## Conclusion
-
-  Using the `_photos_by_pages.txt` file allows you to have complete control over how your trip photos are displayed. By organizing photo indices into pages, you can customize the photo layout per step, ensuring that your trip is displayed just the way you want it.
+To generate the travel book with the updated layout, relaunch the script. 
 </details>
