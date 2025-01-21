@@ -5,45 +5,55 @@ A Python tool that takes your Polarsteps data export and converts it into a beau
 
 ## Setup Instructions
 
-Ensure you are using Python version `3.12`. You can check your Python version with:
+Important: Depending your contex, Python 2 and 3 can be present. To force usage of Python 3, please replace ``python`` by ``python3``.
 
-```bash
+### Ensure you are using Python version `3.12`.
+You can check your Python version with:
+
+```python
 python --version
 ```
 
-Before running the project, create a virtual environment to manage dependencies:
+### Before running the project, install mandatory packages with apt:
+
+```bash
+sudo apt install libnss3 libnspr4 libasound2t64 libxslt1.1 libwoff1 libvpx9 libevent-2.1-7t64 libopus0 libgstreamer-plugins-base1.0-0  libgstreamer-gl1.0-0 libgstreamer-plugins-bad1.0-0 libwebpdemux2 libharfbuzz-icu0 libenchant-2-2 libsecret-1-0 libhyphen0 libmanette-0.2-0 libflite1 gstreamer1.0-libav
+```
+
+### Before running the project, create a virtual environment to manage dependencies:
 
 ```bash
 python -m venv env
 source env/bin/activate
 ```
 
-Once the virtual environment is active, install the required packages:
+### Once the virtual environment is active, install the required packages:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Export your data from Polarsteps by following [these instructions](https://support.polarsteps.com/article/124-how-can-i-export-a-copy-of-my-data). Then, copy **only the trip data** into the `data/polarsteps-trip` folder. Ensure the file named `trip.json` is located in `data/polarsteps-trip/trip.json`.
+### Export your data from Polarsteps by following [these instructions](https://support.polarsteps.com/article/124-how-can-i-export-a-copy-of-my-data). Then, copy **only the trip data** into the `data/polarsteps-trip` folder. Ensure the file named `trip.json` is located in `data/polarsteps-trip/trip.json`.
 
-You can now run the main script to process the trip data:
+### You can now run the main script to process the trip data:
 
 ```bash
 python src/main.py
 ```
 
-You can ajust the script behaviour using the following options:
+## Usage
+### You can ajust the script behaviour using the following options:
 
 - `--debug`: Activates debug mode when included (e.g., --debug).
 - `--step_ranges`: Specifies a range or list of steps to be generated, such as "1-20" for steps 1 to 20, or multip ranges separated by commas (e.g., "1-5,10,15-20").
 - `--no-pdf`: Prevents PDF generation if specified (e.g., --no-pdf). Usefull to quickly test and update your travel book layout.
 - `--paper_format`: Sets the paper format for the PDF output, defaulting to "A4" but can be changed to other forma (e.g., --paper_format="Letter").
 
-The output files are located in the `travel_book` folder. The two most important files are:
+### The output files are located in the `travel_book` folder. The two most important files are:
 - `travel_book.html` wich is the HTML file used to generate the PDF.
 - `travel_book.pdf`
 
-## Notes about default layout
+### Notes about default layout
 
 Some descisions have been made for the default behaviour of the script:
 - If the step description is not too long (<= 800 characters), an **cover photo** will be automatically choosen and placed in the step first page.
@@ -53,7 +63,7 @@ Some descisions have been made for the default behaviour of the script:
   - *Priority 3*: 2 photos, must be 2 portrait
   - *Priority 4*: 1 photo
 
-## Customization of your travel book
+### Customization of your travel book
 
 <details>
   <summary>Translate country / weather</summary>
