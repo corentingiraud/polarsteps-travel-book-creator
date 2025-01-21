@@ -1,7 +1,8 @@
 WEATHER_CONDITION = {
+    "clear-day": "Ensoleille",
+    "cloudy": "Nuageux",
     "partly-cloudy-day": "Partiellement couvert",
     "rain": "Pluvieux",
-    "clear-day": "Ensoleille",
 }
 COUNTRIES = {
     "Afghanistan": "Afghanistan",
