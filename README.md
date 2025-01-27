@@ -5,7 +5,7 @@ A Python tool that takes your Polarsteps data export and converts it into a beau
 
 ## Setup Instructions
 
-Ensure you are using Python version `3.12`. You can check your Python version with:
+Ensure you are using Python version `3.13.x`. You can check your Python version with:
 
 ```bash
 python --version
