@@ -24,6 +24,13 @@ Once the virtual environment is active, install the required packages:
 pip install -r requirements.txt
 ```
 
+This project utilizes [Playwright](https://playwright.dev/python/) to generate PDFs with a headless browser. It may require additional dependencies depending on your operating system. Use the following command to install them:
+
+```bash
+source env/bin/activate
+playwright install
+```
+
 Export your data from Polarsteps by following [these instructions](https://support.polarsteps.com/article/124-how-can-i-export-a-copy-of-my-data). Then, copy **only the trip data** into the `data/polarsteps-trip` folder. Ensure the file named `trip.json` is located in `data/polarsteps-trip/trip.json`.
 
 You can now run the main script to process the trip data:
