@@ -156,6 +156,9 @@ class Step:
             ),
             "elevation": self.elevation,
             "position_percentage": self.position_percentage,
-            "photos_by_pages": self.photos_by_pages,
-            "cover_photo": self.cover_photo,
+            "photos_by_pages": [
+                [photo.get_template_vars() for photo in page]
+                for page in self.photos_by_pages
+            ],
+            "cover_photo": self.cover_photo.get_template_vars() if self.cover_photo else None,
         }
