@@ -1,7 +1,10 @@
 from enum import Enum
+import os
 from pathlib import Path
 from typing import Any, Dict, Self
 from PIL import Image
+
+from constants import OUTPUT_PATH
 
 
 class PhotoRatio(Enum):
@@ -53,8 +56,11 @@ class Photo:
             print(f"Unknown photo ratio for '{self.id}'.")
             return PhotoRatio.UNKNOWN
 
+    def get_relative_path(self):
+        return os.path.relpath(self.path, OUTPUT_PATH)
+
     def get_template_vars(self):
-        return {"path": self.path}
+        return {"path": self.get_relative_path() }
 
     def __eq__(self, other: Any):
         if isinstance(other, Photo):

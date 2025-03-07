@@ -3,20 +3,13 @@ from pathlib import Path
 
 
 from arguments_manager import ArgumentManager
+from constants import HTML_FILE_NAME, OUTPUT_PATH, PDF_FILE_NAME, TRIP_DATA_PATH
 from data_parser import DataParser
 from elevation_api import ElevationAPI
 from html_generator import HTMLGenerator
 from map_manager import MapManager
 from pdf_generator import PDFGenerator
 from photo_manager import PhotoManager
-
-
-CURRENT_FILE_PATH = Path(__file__).resolve().parent
-OUTPUT_PATH = CURRENT_FILE_PATH.parent.joinpath("travel_book")
-HTML_FILE_NAME = "travel_book.html"
-PDF_FILE_NAME = "travel_book.pdf"
-DATA_PATH = CURRENT_FILE_PATH.parent.joinpath("data")
-TRIP_DATA_PATH = DATA_PATH.joinpath("polarsteps-trip")
 
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 
