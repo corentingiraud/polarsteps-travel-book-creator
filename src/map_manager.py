@@ -10,7 +10,9 @@ from models.step import Step
 from models.trip import Trip
 
 DATA_SOURCE = "https://raw.githubusercontent.com/djaiss/mapsicon/master/all/{country_code}/vector.svg"
-FILL_COLOR = "#4b5a6c"
+FILL_COLOR = "#f3f5f7"
+STROKE_COLOR = "#c6cdd7"
+STROKE_WIDTH = 80
 COUNTRY_BOUNDING_BOXES_PATH = "data/country_bounding_boxes.json"
 
 
@@ -65,7 +67,9 @@ class MapManager:
 
                 # Use regex to replace fill="#000000" with the new FILL_COLOR
                 updated_content = re.sub(
-                    r'fill="#000000"', f'fill="{FILL_COLOR}"', content
+                    pattern=r'fill="#000000" stroke="none"',
+                    repl=f'fill="{FILL_COLOR}" stroke="{STROKE_COLOR}" stroke-width="{STROKE_WIDTH}"',
+                    string=content,
                 )
 
                 # Write the updated content back to the file

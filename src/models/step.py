@@ -13,6 +13,14 @@ from translations import (
 DESCRIPTION_MAX_CHAR_COVER_PHOTO = 800
 
 
+def decdeg2dms(dd):
+    """Convert decimal degrees to degrees, minutes, seconds."""
+    mult = -1 if dd < 0 else 1
+    mnt,sec = divmod(abs(dd)*3600, 60)
+    deg,mnt = divmod(mnt, 60)
+    return int(mult*deg), int(mult*mnt), int(mult*sec)
+
+
 class Step:
     def __init__(
         self,
@@ -161,4 +169,6 @@ class Step:
                 for page in self.photos_by_pages
             ],
             "cover_photo": self.cover_photo.get_template_vars() if self.cover_photo else None,
+            "lat": decdeg2dms(self.lat),
+            "lon": decdeg2dms(self.lon),
         }

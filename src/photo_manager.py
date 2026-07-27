@@ -135,13 +135,16 @@ class PhotoManager:
     ):
         output_path_for_photos.mkdir(parents=True, exist_ok=True)
 
-        for step in trip.steps:
+        total_steps = len(trip.steps)
+        num_digits_prefix = len(str(total_steps))
+        for step_num, step in enumerate(trip.steps, start=1):
             photo_directory = data_path.joinpath(step.get_photo_directory_name())
+            prefix = str(step_num).zfill(num_digits_prefix) + "_"
             if os.path.exists(photo_directory):
                 index = 1
                 for photo_filename in os.listdir(photo_directory):
                     photo_path = photo_directory.joinpath(photo_filename)
-                    destination_path = output_path_for_photos.joinpath(photo_filename)
+                    destination_path = output_path_for_photos.joinpath(prefix + photo_filename)
                     shutil.copy(photo_path, destination_path)
                     photo = Photo(
                         id=photo_filename,

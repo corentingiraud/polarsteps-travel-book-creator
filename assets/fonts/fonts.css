@@ -1,5 +1,19 @@
 @font-face {
-  font-family: BrandonGrotesque;
+  font-family: BrandonGrotesque-Bold;
+  src: url("Brandon_bld.woff2") format("woff2");
   font-weight: 500;
-  src: url("Brandon_Grotesque_medium.otf");
+}
+
+@font-face {
+  font-family: BrandonGrotesque-Medium;
+  src: url("Brandon_med.woff2") format("woff2");
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: NotoSerif-Regular;
+  src: url("NotoSerif.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
