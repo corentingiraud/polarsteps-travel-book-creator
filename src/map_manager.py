@@ -32,9 +32,12 @@ class MapManager:
         sw = bounding_box["sw"]
         ne = bounding_box["ne"]
 
+        # Use the midpoint latitude to compute a more accurate east-west distance
+        mid_lat = (sw["lat"] + ne["lat"]) / 2
+
         # Calculate the distance between southwest and northeast corners (both latitudinal and longitudinal distances)
         _, _, total_lat_distance = self.geod.inv(sw["lon"], sw["lat"], sw["lon"], ne["lat"])
-        _, _, total_lon_distance = self.geod.inv(sw["lon"], sw["lat"], ne["lon"], sw["lat"])
+        _, _, total_lon_distance = self.geod.inv(sw["lon"], mid_lat, ne["lon"], mid_lat)
 
         # Calculate the maximum of the two distances for square scaling
         max_distance = max(total_lat_distance, total_lon_distance)
@@ -43,7 +46,7 @@ class MapManager:
 
         # Calculate the distance from the southwest to the step's latitude and longitude
         _, _, lat_distance = self.geod.inv(sw["lon"], sw["lat"], sw["lon"], step.lat)
-        _, _, lon_distance = self.geod.inv(sw["lon"], sw["lat"], step.lon, sw["lat"])
+        _, _, lon_distance = self.geod.inv(sw["lon"], mid_lat, step.lon, mid_lat)
 
         if max_distance == total_lat_distance:
             lon_distance += diff_distance / 2
